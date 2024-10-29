@@ -1,0 +1,67 @@
+<?php
+session_start();
+
+
+$products = [
+    ["id" => 1, "name" => "Krem nawilżający", "price" => 20],
+    ["id" => 2, "name" => "Tonik oczyszczający", "price" => 15],
+    ["id" => 3, "name" => "Szampon", "price" => 25],
+    ["id" => 4, "name" => "Balsam do ciała", "price" => 30],
+    ["id" => 5, "name" => "Mleczko do demakijażu", "price" => 18],
+];
+
+if (isset($_POST['product'])) {
+    $_SESSION['cart'] = $_POST['product'];
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+}
+?>
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Sklep drogeryjny</title>
+</head>
+<body>
+
+<?php
+
+if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
+    echo "<h2>Twój koszyk</h2><ul>";
+    $total = 0;
+
+    foreach ($products as $product) {
+        if (in_array($product["id"], $_SESSION['cart'])) {
+            echo "<li>{$product['name']} - {$product['price']} zł</li>";
+            $total += $product["price"];
+        }
+    }
+
+    echo "</ul><p><strong>Suma: $total zł</strong></p>";
+    echo '<a href="?clear_cart=1">Wyczyść koszyk</a>';
+}
+
+
+if (isset($_GET['clear_cart'])) {
+    unset($_SESSION['cart']);
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+} else {
+?>
+
+    <h1>Wybierz produkty</h1>
+    <form method="POST">
+        <?php foreach ($products as $product): ?>
+            <label>
+                <input type="checkbox" name="product[]" value="<?= $product['id'] ?>"> 
+                <?= $product['name'] ?> - <?= $product['price'] ?> zł
+            </label><br>
+        <?php endforeach; ?>
+        <button type="submit">Przejdź do koszyka</button>
+    </form>
+
+<?php } ?>
+
+</body>
+</html>
