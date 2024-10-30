@@ -1,0 +1,86 @@
+<?php
+session_start();
+
+
+$produkty = [
+    ["id" => 1, "name" => "Krem", "cena" => 20],
+    ["id" => 2, "name" => "Tonik", "cena" => 15],
+    ["id" => 3, "name" => "Szampon", "cena" => 25],
+    ["id" => 4, "name" => "Balsam", "cena" => 30],
+    ["id" => 5, "name" => "Mleczko", "cena" => 18],
+];
+
+if (isset($_POST['produkt'])) {
+    $_SESSION['koszyk'] = $_POST['produkt'];
+    header("Location: " .'index.php');
+    exit();
+}
+?>
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Sklep drogeryjny</title>
+</head>
+<body>
+
+<?php
+
+if (isset($_SESSION['koszyk']) && count($_SESSION['koszyk']) > 0) {
+    echo "<h2>Twój koszyk</h2><ul>";
+    $wynik = 0;
+
+    foreach ($produkty as $produkt) {
+        if (in_array($produkt["id"], $_SESSION['koszyk'])) {
+            echo "<li>{$produkt['name']} {$produkt['cena']} zł</li>";
+            $wynik += $produkt["cena"];
+        }
+    }
+
+    echo "</ul><p><strong>Suma wynosi $wynik zł</strong></p>";
+    echo '<a href="?clear_koszyk=1">Wyczyść koszyk</a>';
+}
+
+
+if (isset($_GET['clear_koszyk'])) {
+    unset($_SESSION['koszyk']);
+    header("Location: " . 'index.php');
+    exit();
+} else {
+?>
+
+    <h1>Wybierz produkty</h1>
+    <form method="POST">
+                    <label>
+                <input type="checkbox" name="produkt[]" value="1"> 
+                Krem 
+                20 zł
+            </label><br>
+                    <label>
+                <input type="checkbox" name="produkt[]" value="2"> 
+                Tonik 
+                15 zł
+            </label><br>
+                    <label>
+                <input type="checkbox" name="produkt[]" value="3"> 
+                Szampon 
+                25 zł
+            </label><br>
+                    <label>
+                <input type="checkbox" name="produkt[]" value="4"> 
+                Balsam 
+                30 zł
+            </label><br>
+                    <label>
+                <input type="checkbox" name="produkt[]" value="5"> 
+                Mleczko 
+                18 zł
+            </label><br>
+                <button type="submit">Przejdź do koszyka</button>
+    </form>
+
+    <?php } ?>
+
+</body>
+</html>
